@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Git Repository') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/kenkool23/demo-repository.git']]])
+            }
+        }
+        stage('Build Application With Maven') {
+            steps {
+                sh 'cd SampleWebApp && mvn clean install'
+            }
+        }
+        stage('Deploy To Tomcat') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.234.70.69:8080')], 
+                contextPath: 'webapp', onFailure: false, war: '**/*.war'
+            }
+        }
+    }
+}
