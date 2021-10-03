@@ -13,7 +13,21 @@ pipeline {
             }
         }
         
-      
+        stage('Deploy Application To JFROG') {
+            steps {
+                rtUpload (
+                    serverId: 'app-version',
+                    spec: '''{
+                        "files": [
+                            {
+                                "pattern": "**/*.war",
+                                "target": "artifact_repo/version_bckup/"
+                            }
+                        ]
+                    }''',
+                )
+            }
+        }
         
         stage('Deploy To Tomcat') {
             steps {
