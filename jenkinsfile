@@ -12,6 +12,23 @@ pipeline {
                 sh 'cd SampleWebApp && mvn clean install'
             }
         }
+        
+        stage('Deploy Application To JFROG') {
+            steps {
+                rtUpload (
+                    serverId: 'app-version',
+                    spec: '''{
+                        "files": [
+                            {
+                                "pattern": "**/*.war",
+                                "target": "artifact_repo/version_bckup/"
+                            }
+                        ]
+                    }''',
+                )
+            }
+        }
+        
         stage('Deploy To Tomcat') {
             steps {
                 deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.234.70.69:8080')], 
